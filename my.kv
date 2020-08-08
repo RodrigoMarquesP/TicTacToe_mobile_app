@@ -1,0 +1,93 @@
+<Button>
+    size: 50, 50
+    color: 0, 0, 0, 1
+    background_normal: ''
+    background_color: 1, 1, 1, 1
+
+
+
+<MainGrid>
+    # Referencing objects
+    zerozero: zerozero
+    zeroone: zeroone
+    zerotwo: zerotwo
+    onezero: onezero
+    oneone: oneone
+    onetwo: onetwo
+    twozero: twozero
+    twoone: twoone
+    twotwo: twotwo
+    retrybtn: retrybtn
+    result: result
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        pos: 0, 0
+        GridLayout:
+            cols:1
+            padding: 20
+            Label:
+                text: "What you're gonna have for dinner?\n     I'm gonna have YOU hehehhe"
+                font_size: 40
+                color: 1, 1, 1, 1
+            Button:
+                id: retrybtn
+                text: "R E T R Y"
+                color: 1, 1, 1, 1
+                background_color: 0, 0, 0, 1
+                font_size: 60
+                on_release: root.clear()
+            Label:
+                id: result
+                text: ""
+                font_size: 70
+                color: 1, 1, 1, 1
+        GridLayout:
+            cols:3
+            spacing: 20
+            padding:40
+            Button:
+                id: zerozero
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: zeroone
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: zerotwo
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: onezero
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: oneone
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: onetwo
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: twozero
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: twoone
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
+            Button:
+                id: twotwo
+                text: ""
+                font_size: 70
+                on_release: root.btn(self)
