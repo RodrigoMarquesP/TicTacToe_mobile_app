@@ -23,97 +23,224 @@ from numpy.random import shuffle
 #################### MINIMAX LOGICS #########################################
 
 
-def jogada_minimax(estado_atual):
-    """Receive the actual state snd returns the better move."""
-    estado_atual = array(estado_atual)
-    for v in teste_terminal(estado_atual):
-        return v
-    utilidade = []
-    jogadas = jogadas_validas(estado_atual)
-    for jogada in jogadas:
-        v = valormin(jogada)
-        if v == 1:
-            return jogada
+def minimax_move(actual_state: array) -> array:
+    """
+    Find the optimal move in a tictactoe game with recursive depth search.
+
+    Parameters
+    ----------
+    actual_state : numpy.array
+        3x3 array that describes the actual state of the game.
+
+    Returns
+    -------
+    numpy.array
+        3x3 array that describes the best move to be done.
+
+    """
+    move_utility = []
+    moves = valid_moves(actual_state)
+    for move in moves:
+        v = minvalue(move)
+        if v == 1:  # in case of 1 utility - win -, select this move
+            return move
         else:
-            utilidade.append(v)
+            # in case of non garanted winning, we look for all states
+            # and list its utilitys
+            move_utility.append(v)
     try:
-        return jogadas[utilidade.index(0)]
+        # try to find an "tied utility move", since wasn't a certain win
+        return moves[move_utility.index(0)]
     except ValueError:
-        return jogadas[0]
+        # return any move, since all of them lead to a defeat
+        # NOTE: this try/except is just for debuging and testing
+        # purpose, since the algorithm will never lose in a normal
+        # game, so, the ValueError will never happen
+        return moves[0]
 
 
-def jogadas_validas(estado, marcar=1):
-    """Return all possible mmoves in the actual state."""
-    n_jogadas = 9 - count_nonzero(estado)
-    jogadas = zeros((n_jogadas, 3, 3), dtype='int8')
-    for index, elemento in ndenumerate(estado):
-        if elemento == 0:
-            novo = copy(estado)
-            novo[index] = marcar
-            jogadas[n_jogadas - 1] = novo
-            n_jogadas -= 1
-    shuffle(jogadas)
-    return jogadas
+def valid_moves(state: array, marker: int = 1) -> array:
+    """
+    Generate the valid moves for a given state of the game.
+
+    Parameters
+    ----------
+    state : numpy.array
+        3x3 array that describes the state node of the game.
+    marker : int, optional
+        Mark the valid moves (1 for machine, -1 for oponent). The default is 1.
+
+    Returns
+    -------
+    moves : numpy.array
+        A array of all the possible moves in the node.
+
+    """
+    n_moves = 9 - count_nonzero(state)  # counting the valid moves
+    moves = zeros((n_moves, 3, 3), dtype='int8')  # a array of states
+    for index, item in ndenumerate(state):
+        if item == 0:  # if isn't a mark in this position
+            new = copy(state)
+            new[index] = marker  # mark
+            moves[n_moves - 1] = new  # put the new move in the moves array
+            n_moves -= 1  # ajust the position of the next new state
+    shuffle(moves)  # shuffle the moves
+    # the reason of shuffling the states array is to make the
+    # moves less predictable, making the machine select any of
+    # the states with higher utility
+    return moves
 
 
-def valormin(estado):
-    """Look for the minimun utility value at the knot."""
-    for v in teste_terminal(estado):
+def minvalue(state: array) -> int:
+    """
+    Simulate the perfect oponent move - lower utility.
+
+    Parameters
+    ----------
+    state : numpy.array
+        Actual node of the search.
+
+    Returns
+    -------
+    v : int
+        Utility of node according to minimax logics.
+
+    """
+    for v in terminal_test(state):
+        # using a 'for block' with a single element list
+        # allow us to return the utility of the state
+        # if it's a terminal one, without a couple of 'if blocks'
         return v
-    v = 2
-    for jogada in jogadas_validas(estado, marcar=-1):
-        v = mini(v, valormax(jogada))
+    v = 2  # higher than any real utility
+    for move in valid_moves(state, marker=-1):
+        # Select the lower utility move between the machine moves
+        v = mini(v, maxvalue(move))
     return v
 
 
-def valormax(estado):
-    """Look for the maximun utility value at the knot."""
-    for v in teste_terminal(estado):
+def maxvalue(state: array) -> int:
+    """
+    Choose the best move for the machine - higher utility.
+
+    Parameters
+    ----------
+    state : numpy.array
+        Actual node of the search.
+
+    Returns
+    -------
+    v : int
+        Utility of node according to minimax logics.
+
+    """
+    for v in terminal_test(state):
+        # using a 'for block' with a single element list
+        # allow us to return the utility of the state
+        # if it's a terminal one, without a couple of 'if blocks'
         return v
-    v = -2
-    for jogada in jogadas_validas(estado):
-        v = maxi(v, valormin(jogada))
+    v = -2  # lower than any real utility
+    for move in valid_moves(state):
+        # Select the higher utility move between the oponent moves
+        v = maxi(v, minvalue(move))
     return v
 
 
-def mini(a, b):
-    """Return the minumun between two values."""
+def mini(a: int, b: int) -> int:
+    """
+    Return the lower of two arguments.
+
+    Parameters
+    ----------
+    a : int
+        A utility value.
+    b : int
+        A utility value.
+
+    Returns
+    -------
+    int
+        The lower between the two parameters.
+
+    """
     return a if b > a else b
 
 
-def maxi(a, b):
-    """Return the maximun between two values."""
+def maxi(a: int, b: int) -> int:
+    """
+    Return the higher of two arguments.
+
+    Parameters
+    ----------
+    a : int
+        A utility value.
+    b : int
+        A utility value.
+
+    Returns
+    -------
+    int
+        The higher between the two parameters.
+
+    """
     return a if a > b else b
 
 
-def teste_terminal(no):
-    """Returns the utility of a terminal knot or nothing in a non terminal."""
-    if 3 in sm(no, axis=0) or 3 in sm(no, axis=1):
+def terminal_test(node: array) -> list:
+    """
+    Return the utility of the state.
+
+    ([] if its not a terminal node)
+    ([1] if its a winning node)
+    ([-1] if its a losing node)
+
+    Parameters
+    ----------
+    node : np.array
+        Actual node of the search.
+
+    Returns
+    -------
+    list
+        A single element list with the utility of the requested node.
+
+    """
+    if 3 in sm(node, axis=0) or 3 in sm(node, axis=1):
         return [1]
-    if (no[(0, 0)] + no[(1, 1)] + no[(2, 2)]) == 3:
+    if (node[(0, 0)] + node[(1, 1)] + node[(2, 2)]) == 3:
         return [1]
-    if (no[(0, 2)] + no[(1, 1)] + no[(2, 0)]) == 3:
+    if (node[(0, 2)] + node[(1, 1)] + node[(2, 0)]) == 3:
         return [1]
-    if -3 in sm(no, axis=0) or -3 in sm(no, axis=1):
+    if -3 in sm(node, axis=0) or -3 in sm(node, axis=1):
         return [-1]
-    if (no[(0, 0)] + no[(1, 1)] + no[(2, 2)]) == -3:
+    if (node[(0, 0)] + node[(1, 1)] + node[(2, 2)]) == -3:
         return [-1]
-    if (no[(0, 2)] + no[(1, 1)] + no[(2, 0)]) == -3:
+    if (node[(0, 2)] + node[(1, 1)] + node[(2, 0)]) == -3:
         return [-1]
-    if count_nonzero(no) == 9:
+    if count_nonzero(node) == 9:
+        # non-terminal state
         return [0]
     return []
 
 
 ############################ APPLICATION LOGICS #############################
 
+# setting the background color as black
 Window.clearcolor = (0, 0, 0, 1)
+
+# Setting the screen size
 # Window.size = (360, 600)
+# We use the line above for vizualizing how the screen will look in
+# a mobile device, but it can't be used for the mobile application
+# cause it limits the screen size.
 
 
 class MainGrid(Widget):
     """Interface class."""
 
+    # the static variables:
+    # 9 variables, one for each button
+    # 1 variable for the retry button
+    # 1 variable for the result button (only for display purpose)
     zerozero = ObjectProperty(None)
     zeroone = ObjectProperty(None)
     zerotwo = ObjectProperty(None)
@@ -134,7 +261,7 @@ class MainGrid(Widget):
         super().__init__(**kwargs)
         self.sound = SoundLoader.load("main_music.wav")
         self.sound.loop = True
-        self.sound.play()
+        #self.sound.play()  ###############################################################################
 
     def btn(self, button):
         """
@@ -164,7 +291,7 @@ class MainGrid(Widget):
             self.player_round = True
         elif self.result.text == "" and not self.player_round:
             state = self.give_state()
-            next_move = jogada_minimax(state)
+            next_move = minimax_move(state)
             coord = where((next_move - state) == 1)
             self.mark(coord)
             self.verify()
@@ -245,7 +372,7 @@ class MainGrid(Widget):
 
         """
         state = self.give_state()
-        res = teste_terminal(state)
+        res = terminal_test(state)
         for r in res:
             if r == 0:
                 self.result.text = "TIED GAME"
