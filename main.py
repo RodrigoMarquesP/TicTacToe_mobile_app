@@ -266,7 +266,7 @@ class MainGrid(Widget):
         # load and play the main music with infinity loops
         self.sound = SoundLoader.load("main_music.wav")
         self.sound.loop = True
-        #self.sound.play()  ###############################################################################
+        self.sound.play()
 
     def btn(self, button):
         """
