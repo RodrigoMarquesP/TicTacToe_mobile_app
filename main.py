@@ -241,6 +241,10 @@ class MainGrid(Widget):
     # 9 variables, one for each button
     # 1 variable for the retry button
     # 1 variable for the result button (only for display purpose)
+    # 1 flag to allow reset for a new game
+    # 1 flag to allow the player to make his move
+    # 1 flag to alternate trought who begins the round
+    # 1 flag to mark if its the first move at each round
     zerozero = ObjectProperty(None)
     zeroone = ObjectProperty(None)
     zerotwo = ObjectProperty(None)
@@ -259,6 +263,7 @@ class MainGrid(Widget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # load and play the main music with infinity loops
         self.sound = SoundLoader.load("main_music.wav")
         self.sound.loop = True
         #self.sound.play()  ###############################################################################
@@ -277,47 +282,62 @@ class MainGrid(Widget):
         None.
 
         """
+        # just allows the player to mark a button
+        # if it wasn't marked before, and it's the
+        # player turn and the game it's not over yet
         if button.text == "" and self.player_round and self.result.text == "":
+            # mark the button
             button.text = "X"
+            # verify the end of the game
             self.verify()
+            # turn the flag to the machine turn
             self.player_round = False
 
     def call_minimax(self, dt):
         """Do all procedure of the machine round."""
+        # only allowed if it's the machine turn
         if self.first_move and not self.player_round:
-            coords = where((self.give_state()) == -1)
-            self.first_move_marker(coords)
-            self.first_move = False
-            self.player_round = True
+            # this block will execute if it's the first
+            # move of the round and the player started
+            # the game, so, the second mark of the whole game
+            coord = where((self.give_state()) == -1)  # found the first mark
+            self.first_move_marker(coord)  # do the first machine move
+            self.first_move = False  # turn the flag
+            self.player_round = True  # turn the flag
         elif self.result.text == "" and not self.player_round:
-            state = self.give_state()
-            next_move = minimax_move(state)
-            coord = where((next_move - state) == 1)
-            self.mark(coord)
-            self.verify()
-            self.player_round = True
+            # this block will execute for all other moves
+            state = self.give_state()  # get the actual state
+            next_move = minimax_move(state)  # call minimax algorithm
+            coord = where((next_move - state) == 1)  # the algorithm choice
+            self.mark(coord)  # mark the move
+            self.verify()  # verify the end of the game
+            self.player_round = True  # turn the flag
 
-    def first_move_marker(self, coords):
-        """Call mark function with a if-else statement."""
-        if coords in [(0, 0), (0, 2), (2, 0), (2, 2)]:
+    def first_move_marker(self, coord: tuple):
+        """
+        Call mark function with a if-else statement.
+
+        Works as a table querying to make the move.
+        """
+        if coord in [(0, 0), (0, 2), (2, 0), (2, 2)]:
             self.mark((1, 1))
-        elif coords == (1, 1):
+        elif coord == (1, 1):
             self.mark(choice([(0, 0), (0, 2), (2, 0), (2, 2)]))
-        elif coords == (0, 1):
-            self.mark(choice([(coords[0], choice([0, 2])),
-                              (choice([1, 2]), coords[1])]))
-        elif coords == (1, 2):
-            self.mark(choice([(coords[0], choice([0, 1])),
-                              (choice([0, 2]), coords[1])]))
-        elif coords == (2, 1):
-            self.mark(choice([(coords[0], choice([0, 2])),
-                              (choice([0, 1]), coords[1])]))
+        elif coord == (0, 1):
+            self.mark(choice([(coord[0], choice([0, 2])),
+                              (choice([1, 2]), coord[1])]))
+        elif coord == (1, 2):
+            self.mark(choice([(coord[0], choice([0, 1])),
+                              (choice([0, 2]), coord[1])]))
+        elif coord == (2, 1):
+            self.mark(choice([(coord[0], choice([0, 2])),
+                              (choice([0, 1]), coord[1])]))
         else:
-            self.mark(choice([(coords[0], choice([1, 2])),
-                              (choice([0, 2]), coords[1])]))
+            self.mark(choice([(coord[0], choice([1, 2])),
+                              (choice([0, 2]), coord[1])]))
 
-    def mark(self, coord):
-        """Mark the move on the table."""
+    def mark(self, coord: tuple):
+        """Mark the machine move on the board by adding "O" on the buttons."""
         if coord == (0, 0):
             self.zerozero.text = "O"
         elif coord == (0, 1):
@@ -339,18 +359,20 @@ class MainGrid(Widget):
 
     def give_state(self):
         """
-        Read the text from the buttons and gerrerates a corresponding array.
+        Read the text from the buttons and generates a corresponding array.
 
         Returns
         -------
         numpy.array
-            A representation of the table.
+            A representation of the board.
 
         """
-        state = []
+        state = []  # create a empty state
+        # append the buttons texts in the state
         state.append([self.zerozero.text, self.zeroone.text, self.zerotwo.text])
         state.append([self.onezero.text, self.oneone.text, self.onetwo.text])
         state.append([self.twozero.text, self.twoone.text, self.twotwo.text])
+        # modify the list from text to integers
         for i, e in enumerate(state[:]):
             for i2, e2 in enumerate(e):
                 if e2 == "X":
@@ -359,35 +381,32 @@ class MainGrid(Widget):
                     state[i][i2] = 1
                 else:
                     state[i][i2] = 0
-        return array(state)
+        return array(state)  # cast to a numpy array
 
     def verify(self):
         """
-        Call 'teste_terminal' in the actual state to set the game result.
+        Call 'terminal_test' in the actual state to give the game result.
 
-        Returns
-        -------
-        numpy.array
-            A representation of the table.
-
+        Writes in the result button.
         """
-        state = self.give_state()
-        res = terminal_test(state)
+        state = self.give_state()  # get actual state
+        res = terminal_test(state)  # consult the end of the game
+        # if the haven't ended yet, terminal state returns a eempty list
+        # so, the block bellow won't be executed
         for r in res:
             if r == 0:
                 self.result.text = "TIED GAME"
-                self.allow_clear = True
+                self.allow_clear = True  # turn the flag to allow resetting
             elif r == 1:
                 self.result.text = "YOU LOSE"
-                self.allow_clear = True
+                self.allow_clear = True  # turn the flag to allow resetting
             elif r == -1:
                 self.result.text = "YOU WIN"
-                self.allow_clear = True
-        return state
+                self.allow_clear = True  # turn the flag to allow resetting
 
     def clear(self):
         """Clear the table and manage the first player."""
-        if self.allow_clear:
+        if self.allow_clear:  # just if the game ended
             self.zerozero.text = ""
             self.zeroone.text = ""
             self.zerotwo.text = ""
@@ -399,11 +418,15 @@ class MainGrid(Widget):
             self.twotwo.text = ""
             self.result.text = ""
             self.allow_clear = False
-            if not self.player_starts_next:
+            if not self.player_starts_next:  # if the player began last round
+                # when the machine starts the round, a randomly
+                # position is marked. That's why all utilitys are
+                # zero and it makes the machine less predictable
                 self.mark((choice([0, 1, 2]), choice([0, 1, 2])))
-                self.player_round = True
-                self.player_starts_next = True
+                self.player_round = True  # turn the flag
+                self.player_starts_next = True  # turn the flag
             else:
+                # when the player starts the round
                 self.player_starts_next = False
                 self.first_move = True
                 self.player_round = True
@@ -414,8 +437,10 @@ class MyApp(App):
 
     def build(self):
         """Build the application."""
+        # set the game icon
         self.icon = 'grandmother.png'
-        game = MainGrid()
+        game = MainGrid()  # calls the MainGrid object
+        # calls the machine move function twice in a second
         Clock.schedule_interval(game.call_minimax, 1.0/2)
         return game
 
