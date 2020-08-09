@@ -14,6 +14,6 @@ The simple structure that was followed is to heriting a kivy.uix.widget.Widget c
 </p>
 
 <p align="center">
-  <img src="images/game_screen2.jpg" width="300">
+  <img src="images/game_screen2.jpeg" width="300">
 </p>
 
