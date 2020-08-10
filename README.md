@@ -10,12 +10,7 @@ The simple structure that was followed is to heriting a kivy.uix.widget.Widget c
   
 
 <p align="center">
-  <img src="images/game_screen.jpg" width="300">
-</p>
-
-  
-<p align="center">
-  <img src="images/game_screen2.jpeg" width="300">
+  <img src="images/game_screen.jpg" width="700">
 </p>
 
   
@@ -55,7 +50,15 @@ For fully study the situation, we split it in two cases - machine does the first
 We can see that:
 * If the first mark is in the middle, we must mark at a corner.
 * If the first mark is in a corner, we must mark at the middle.
-* If the first mark is in a side, we must mark at any position in the same row or column
+* If the first mark is in a side, we must mark at any position in the same row or column.
+
+This strategy is implemented trough a class method in the script, that receive a tuple of the first mark coordinate and choose randomly between the explained possibilities of better moves.  
+
+After those two treatments, the minimax algorithm just deal with seven or less levels of depth, which in my phone was pretty fast.
+
+### Building the APk:
+
+
 
 
 
