@@ -48,7 +48,16 @@ For fully study the situation, we split it in two cases - machine does the first
 * Eight levels depth search: this case is a little more complicated, but let's solve it. Executing the code several times in different positions, a pattern turns clear. There are three types of first moves that our agent must deal with, a mark in the middle of the board, at the corner, and at the side, and each one have its ideal responses. The three images below represent the situations, since the blue circle marks the first move, and the red X's marks the maximum utility responses:
 
 
-<img src="images/better_second_moves.jpg" height="300">
+<p align="center">
+  <img src="images/better_second_moves.png" height="300">
+</p>
+
+We can see that:
+* If the first mark is in the middle, we must mark at a corner.
+* If the first mark is in a corner, we must mark at the middle.
+* If the first mark is in a side, we must mark at any position in the same row or column
+
+
 
 
 
