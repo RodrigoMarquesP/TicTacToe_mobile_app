@@ -7,7 +7,7 @@ This project is a practical implementation in kivy framework of the depth search
 ### Implementing:
 The best framework to develop mobile applications with python is kivy, which just the basics are necessary for this project, but fell free to learn more and implement it in different ways.  
 The simple structure that was followed is to heriting a kivy.uix.widget.Widget class and configure its interface and components in a '.kv' file, then call the Widget object inside our App class.  
-The .kv file must have the same name of the App class, but without the name 'app', for example, my class name is 'MyApp' and I named the file 'my.ky', but if the name didn't have 'app' on it, then the name of the class and the .kv would be the same, like if the class name were 'GameBuilder', the file would be 'gamebuilder.kv'.  
+The .kv file must have the same name of the App class, but without the word 'app', for example, my class name is 'MyApp' and I named the file 'my.ky', but if the name didn't have 'app' on it, then the name of the class and the .kv would be the same, like if the class name were 'GameBuilder', the file would be 'gamebuilder.kv'.  
 At this specific project, inside the Widget object, I split the screen using GridLayout objects - which works similar to those from *matplotlib.pyplot* - and filling them with labels and buttons. The general configurations were just about colors, sizes, positions, paddings, font sizes and which text appears, making the game screen looks like this:
   
 
