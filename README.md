@@ -75,7 +75,7 @@ I came into a lot of trouble doing the installations in a wrong order, so follow
 buildozer init
 ````
 
-This command creates a 'buildzer.spec' file, which needs to be open and modified. In this file that we set the application name, the icon, the load screen image and the requirements of it, like modules and file extensions to be downloaded or recognized. I put the altered code below to guide you:
+This command creates a 'buildzer.spec' file, which needs to be open and modified. In this file we set the application name, the icon, the load screen image and the requirements of it, like modules and file extensions to be downloaded or recognized. I put the altered code below to guide you:
 
 
 ````
