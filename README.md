@@ -54,7 +54,7 @@ We can see that:
 * If the first mark is in a corner, we must mark at the middle.
 * If the first mark is in a side, we must mark at any position in the same row or column.
 
-This strategy is implemented trough a class method in the script, that receive a tuple of the first mark coordinate and choose randomly between the explained possibilities of better moves.  
+This strategy is implemented trough a class method in the script, that receive a tuple of the first mark coordinates and choose randomly between the explained possibilities of better moves.  
 
 After those two treatments, the minimax algorithm just deal with seven or less levels of depth, which in my phone was pretty fast.
 
