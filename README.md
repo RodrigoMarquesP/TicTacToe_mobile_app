@@ -109,7 +109,7 @@ After configuring the buildozer.spec file, save it and run the compiling code:
 buildozer -v android debug
 ````
 
-If everything gone right, it will create the apk file. The first time will be the longer, since the process will download android SDK and NDK, but next other compilings will be pretty fast. The apk file can be installed in any mobile device with a bigger android version than the minimum covered by buildozer. I also put my apk in this repository, for those who want to test or even run it without all the construction process.
+If everything gone right, it will create the apk file. The first time will be the longer, since the process will download android SDK and NDK, but next other compilings will be pretty fast. The apk file can be installed in any mobile device with a bigger android version than the minimum covered by buildozer. I also put my apk in this repository, for those who want to test it or even run it without all the construction process.
 
 **NOTE**: It's also possible to build an ios application. I didn't, but fell free to do it yourself.
 
